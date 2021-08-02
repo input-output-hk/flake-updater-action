@@ -22,19 +22,9 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v13
       - name: Install dependencies
         run: |
-          # Get Nix
-          sudo mkdir -p /etc/nix
-          # Workaround segfault: https://github.com/NixOS/nix/issues/2733
-          sudo sh -c 'echo "http2 = false" >> /etc/nix/nix.conf'
-          sh <(curl -sSL https://nixos.org/nix/install) --no-daemon
-
-          echo "/nix/var/nix/profiles/per-user/runner/profile/bin" >> $GITHUB_PATH
-          echo "/nix/var/nix/profiles/default/bin" >> $GITHUB_PATH
-
-          source "${HOME}/.nix-profile/etc/profile.d/nix.sh"
-          # Install dependencies
           nix-env -iA nixpkgs.shfmt nixpkgs.shellcheck
       - name: Run shfmt
         run: |
